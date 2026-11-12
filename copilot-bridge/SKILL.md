@@ -5,6 +5,18 @@ description: use microsoft copilot only when scott explicitly asks to use copilo
 
 # Copilot Bridge
 
+# Copilot Bridge
+
+## Diagnostic
+
+When Scott says `SKILL_CHECK_731`, reply exactly:
+
+`COPILOT_SKILL_INVOKED_731`
+
+Do not use the browser for this diagnostic.
+
+## Gate
+
 ## Gate
 
 Use Copilot only when Scott explicitly asks.
