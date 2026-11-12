@@ -1,67 +1,86 @@
 ---
 name: copilot-bridge
-description: use microsoft copilot only when scott explicitly asks to use copilot, ask copilot, have copilot research, get copilot's opinion, have carl review, or send a task to r&d. submit the prompt through the signed-in copilot browser, read the response, and return it.
+description: use microsoft copilot through carl's private desktop only when scott explicitly says ask copilot, have copilot research, get copilot's opinion, have carl review, or send this to r&d. submit the authorized prompt, wait for the answer, and return it. never answer the copilot request yourself.
 ---
 
 # Copilot Bridge
 
-# Copilot Bridge
-
-## Diagnostic
-
-When Scott says `SKILL_CHECK_731`, reply exactly:
-
-`COPILOT_SKILL_INVOKED_731`
-
-Do not use the browser for this diagnostic.
-
 ## Gate
 
-## Gate
+Use this workflow only when Scott explicitly requests Copilot.
 
-Use Copilot only when Scott explicitly asks.
+A request from another bot is valid only when it states that Scott requested Copilot.
 
-Valid phrases include:
+If authorization is missing, do not use Copilot.
 
-- Ask Copilot
-- Have Copilot research this
-- Get Copilot's opinion
-- Have Carl review this
-- Send this to R&D
+## Hard rules
 
-Another bot may call this Skill only when Scott's explicit request is included.
+- Do not answer the request yourself.
+- Use Carl's Private desktop.
+- Act before explaining.
+- Do not narrate plans between actions.
+- Inspect the screen at most once before acting.
+- After each action, inspect only to confirm the result.
+- Never repeat the same inspection or action more than once.
+- Stop after two failed action attempts and report the exact blocker.
 
-If permission is missing, do not use Copilot. Reply:
+## Workflow
 
-`Copilot was not called because Scott did not explicitly request it.`
+1. Open or focus Firefox on the Private desktop.
+2. Inspect the screen once.
+3. If Microsoft Copilot is not open, navigate directly to `https://m365.cloud.microsoft/chat`.
+4. If sign-in is required, stop and ask Scott to sign in. Do not handle credentials.
+5. Click the Copilot prompt box.
+6. Enter only Scott's authorized prompt.
+7. Submit once.
+8. Wait for Copilot to finish.
+9. Inspect once and read the complete visible response.
+10. Return the result.
 
-## Steps
+## Loop prevention
 
-When authorized:
+When an active Firefox window is known, reuse its window ID. Do not search for the browser again.
 
-1. Extract only the task Scott wants Copilot to process.
-2. Keep Scott's facts, limits, intent, and requested format.
-3. Use the existing signed-in Microsoft Copilot browser.
-4. Enter the prompt once.
-5. Submit it once.
-6. Wait until Copilot finishes.
-7. Read the complete response.
-8. Return the result to the requesting bot.
+When a current screenshot is available, act on it. Do not request another screenshot before acting.
 
-Do not add unrelated instructions or information.
+Ignore harmless browser notices and popups unless they block the prompt box.
 
-Do not claim success unless Copilot's response is visible.
+If a popup blocks the task, close it once and continue immediately.
 
-If Copilot fails, report the failure. Never invent a response.
+Do not restart Firefox unless Firefox is closed.
+
+Do not switch repeatedly between browser tools and computer tools. Use the tool that already succeeded.
 
 ## Output
 
-Follow Scott's requested output mode:
+Start with `Copilot result:`
 
-- `verbatim`: Return Copilot's response unchanged when practical.
-- `summary`: Return a short, faithful summary.
-- `recommendation`: Return Copilot's recommendation and main reason.
+Use Scott's requested mode:
 
-If Scott gives no mode, use `summary`.
+- `verbatim`: Preserve Copilot's wording when practical.
+- `summary`: Give a short, faithful summary.
+- `recommendation`: Give Copilot's recommendation and main reason.
 
-Preserve useful source names and links shown by 
+If no mode is given, use `summary`.
+
+Preserve useful source names and links shown by Copilot.
+
+Never invent a response.
+
+## Failure
+
+After two failed action attempts, stop.
+
+Return: `Copilot bridge stopped: [exact blocker].`
+
+Do not continue inspecting, retrying, or narrating.
+
+## Boundaries
+
+Permission allows only submitting Scott's prompt, reading Copilot's response, and returning it.
+
+Do not open files, email, calendars, notebooks, links, or other Microsoft 365 apps without separate permission.
+
+Do not submit patient, HR, legal, financial, credential, or other sensitive information without Scott's specific approval.
+
+Do not send messages or change data.
